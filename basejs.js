@@ -388,7 +388,7 @@
         // successFunction (optional) - will execute after successful post and the replacement is done.
         // errorFunction (optional) - will execute after a failed post and errors placed.
         // completeFunction (optional) - will execute after a post has succeeded or failed and after complete function
-        postAndReplace = function (ev, uri, replaceElementId, successFunction, errorFunction, completeFunction) {
+        postAndReplace = function (ev, uri, replaceElementId, successFunction, errorFunction, completeFunction, closeModalElementId) {
             var f = eventSource(ev),                        // grab form from the event passed in
                 vform = exists(f) ? f : getFirstForm(),     // if no form matches, grab first form
                 vbusy = null,                               // busy text of the button (vbusy.id for the ID name, vbusy.html to get it back)
@@ -398,12 +398,18 @@
                 vreplaceId = exists(replaceElementId) ?     // Gets the replacement element id from what is passed in or from the form tag.
                     replaceElementId :
                     getDataFromTag(vform, 'updatetarget'),
-                vformData = null;
+                vcloseModalElementId = exists(closeModalElementId) ?  // Gets close modal element.   This is the element it will attempt to close a bs modal for.
+                    closeModalElementId :
+                    getDataFromTag(vform, 'closemodaltarget'),
+                vformData = null;                           // FormData for posting
 
             // success method
             var vsuccess = function (data) {
+                // clear validation summary on success
                 clearValidationSummary(vform);
                 var dr = data.response;
+
+                // check to see if it's a redirect response
                 if (isJson(dr)) {
                     const jr = JSON.parse(dr);
                     if (jr.type === "redirect") {
@@ -412,9 +418,19 @@
                 }
                 else {
                     var e = getElement(vreplaceId);
+
+                    // if replacement id exists, respond with response.
                     if (exists(e)) {
                         e.innerHTML = data.response;
                     }
+
+                    // check to see if modal exists and/or needs to close
+                    if (exists(basejs.modals) && isString(vcloseModalElementId)) {
+                        var vmodal = bootstrap.Modal.getInstance(basejs.getElement(vcloseModalElementId));
+                        vmodal.hide();
+                    }
+
+                    // run external success function
                     if (exists(successFunction) && isFunction(successFunction)) {
                         successFunction();
                     }
@@ -423,66 +439,86 @@
 
             // error method
             var verror = function (data) {
-                //alert('Error occurred.  Make a better notification tho');
-                //document.replaceChild(data.response, document.documentElement);
                 var verrorTarget = getDataFromTag(vform, 'updatetargeterror');
                 var vclearOnError = getDataFromTag(vform, 'cleartargetonerror');
+
+                // check to see if the element should be cleared out
                 if (exists(vclearOnError) && toBool(vclearOnError) === true) {
                     var el = getElement(vreplaceId);
                     el.innerHTML = '';
                 }
+
+                // check to see if there's an error target and if not, use the success replacement
                 var e = exists(verrorTarget) ? getElement(verrorTarget) : getElement(vreplaceId);
 
+                // load errors to page
                 if (exists(e)) {
                     if (data.statusCode >= 500) {
                         // rewrite the whole page if it's a 500. innerHTML doesn't work well with modals for 500 errors
                         document.write(data.response);
                     }
                     else {
+                        // write the response to the element
                         e.innerHTML = data.response;
                     }
                 }
+
+                // run additional external error functions
                 if (exists(errorFunction) && isFunction(errorFunction)) {
                     errorFunction();
                 }
             };
+
+            // after success or failures, we will run complete
             var vcomplete = function () {
+                // put the button back like it was
                 showOriginal(vcurrentButton, vbusy);
+
+                // run additional external error functions
                 if (exists(completeFunction) && isFunction(completeFunction)) {
                     completeFunction();
                 }
+
+                // initialize everything on the page again.
                 init();
 
             };
+
+            // checks to see if we have a form to post
             if (exists(vform)) {
+                // if submission is a button and not a form, find the form.
                 if (vform.tagName.toLowerCase() === "button") {
                     vcurrentButton = vform;
                     vformData = createFormData();
                 }
                 else {
+                    // prevent regular button/form submit.
                     ev.preventDefault();
+                    // grabs the submit button based inside of the current form
                     vcurrentButton = getElementBySelector('button[type="submit"]', vform);
-                    vformData = createFormData(vform);      // gather form data for the form found
+                    // get FormData based on current form.
+                    vformData = createFormData(vform);      
                 }
+                // set busy indicator on the submit button
                 vbusy = showBusy.apply(vcurrentButton, arguments);
 
+                // get all data-basejs-param-{x} items from the form tag
                 var vdataset = [].filter.call(vform.attributes, function (at) { return /^data-basejs-param-/.test(at.name); });
                 if (isArray(vdataset)) {
+                    // add all data-basejs-param-{x} items to the FormData object
                     for (let i = 0; i < vdataset.length; i++) {
                         var vname = vdataset[i].name.replace('data-basejs-param-', '').toLowerCase(), vvalue = vdataset[i].value;
                         vformData.append(vname, vvalue);
                     }
                 }
 
+                // submits the form
                 postForm(
-                    vuri,                                   // url of the post
-                    vformData,                              // data of the form
-                    // success function
-                    vsuccess,
-                    // error function
-                    verror,
-                    // complete function
-                    vcomplete
+                    vuri,           // url of the post
+                    vformData,      // data of the form
+                    vsuccess,       // success function
+                    verror,         // error function
+                    vcomplete       // complete function
                 );
             }
             else {
@@ -639,4 +675,3 @@
     window['basejs'] = app;
     domready(init);
 })();
-

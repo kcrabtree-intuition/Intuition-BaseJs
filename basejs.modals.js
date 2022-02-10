@@ -98,7 +98,7 @@
         },
 
         // modal to use when loading a modal
-        loadingModal = function () {
+        loadModal = function () {
             var a = arguments, l = a.length;
             switch (l) {
                 case 0:
@@ -111,7 +111,7 @@
         },
 
         // modal to use when a failure occurs.
-        failureModal = function () {
+        failModal = function () {
             var a = arguments, l = a.length;
             switch (l) {
                 case 0:
@@ -124,7 +124,7 @@
         },
 
         // property to get/set the failure response html. By default, this text will go before the failure data
-        failureModalResponse = function () {
+        failModalResponse = function () {
             var a = arguments, l = a.length;
             switch (l) {
                 case 0:
@@ -141,24 +141,22 @@
         //      {responseData}:
         //          [Required] Replaces the string literal with the response from the server in the modal
         //      {responseText}:
-        //          [Optional] Replaces the string literal with the text assigned to failureResponse
-        setFailureModal = function (element, data) {
+        //          [Optional] Replaces the string literal with the text assigned to failureResponseHtml
+        setFailureModal = function (element, responseData) {
             if (basejs.isElement(element)) {
-                var vhtml = failureModal.replace('{responseText}', (basejs.exists(data) ? failureResponse : ''));
-                vhtml.replace('{responseData}', (basejs.exists(data) ? data.response : ''));
+                var vhtml = failureModalHtml.replace('{responseText}', (basejs.exists(responseData) ? failureResponseHtml : ''));
+                vhtml = vhtml.replace('{responseData}', (basejs.exists(responseData) ? responseData.response : ''));
                 element.innerHTML = vhtml;
             }
         },
 
         // Sets the current loading modal to the element provided.
         // Input:
-        //      {responseData}:
-        //          [Required] Replaces the string literal with the response from the server in the modal
-        //      {responseText}:
-        //          [Optional] Replaces the string literal with the text assigned to failureResponse
+        //      element:
+        //          [Required] Replaces the element with the loadingModalHtml
         setLoadingModal = function (element) {
             if (basejs.isElement(element)) {
-                element.innerHTML = loadingModal;
+                element.innerHTML = loadingModalHtml;
             }
         },
 
@@ -175,27 +173,28 @@
         //          i.  In javascript: basejs.modals.loadingModal = 'your html'
         //      b. failureModal
         //          i. In javascript: basejs.modals.failureModal = 'your html'
-        //      c. failureResponse
+        //      c. failureResponseHtml
         //          i. In javascript: basejs.modals.failureResponse = 'your html'
         initDefaultModals = function () {
             var vloading = basejs.getElement('LoadingModal'), vfailure = basejs.getElement('FailureModal'), vfailureModalResponse = basejs.getElement('FailureModalResponse');
             if (basejs.isElement(vloading)) {
-                loadingModal = vloading.value;
+                loadModal(vloading.value);
             }
             if (basejs.isElement(vfailure)) {
-                failureModalResponse = vfailure.value;
+                failModal(vfailure.value);
             }
             if (basejs.isElement(vfailureModalResponse)) {
-                failureModalResponse = vfailureModalResponse.value;
+                failModalResponse(vfailureModalResponse.value);
             }
             // default response text before the data (optional)
-            if (!basejs.exists(failureModalResponse)) {
-                failureModalResponse = 'Response:<br />';
+            if (!basejs.isString(failureResponseHtml)) {
+                failModalResponse('Response:<br />');
             }
+
             // default failure modal if none exist yet
-            if (!basejs.isString(failureModal)) {
-                failureModal =
-                    '   <div class="modal-dialog">'
+            if (!basejs.isString(failureModalHtml)) {
+                failModal(
+                    '   <div class="modal-dialog modal-xl">'
                     + '     <div class="modal-content">'
                     + '         <div class="modal-header modal-header-color">'
                     + '             <h5 class="modal-title" id="sharedmodalslabel">Error</h4>'
@@ -209,12 +208,12 @@
                     + '             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>'
                     + '         </div>'
                     + '     </div>'
-                    + ' </div>';
+                    + ' </div>');
             }
 
             // default loading modal if none exist yet
-            if (!basejs.isString(loadingModal)) {
-                loadingModal =
+            if (!basejs.isString(loadingModalHtml)) {
+                loadModal(
                     '   <div class="modal-dialog">'
                     + '     <div class="modal-content">'
                     + '         <div class="modal-header modal-header-color">'
@@ -230,36 +229,36 @@
                     + '             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>'
                     + '         </div>'
                     + '     </div>'
-                    + ' </div>';
+                    + ' </div>');
             }
         },
         initModals = function () {
-            var vsharedModals = document.getElementsByClassName('modal'); //document.getElementById(targetEID);
+            var vsharedModals = document.getElementsByClassName('modal');
             for (let i = 0; i < vsharedModals.length; i++) {
                 vsharedModals[i].addEventListener('shown.bs.modal', onShowModal);
                 vsharedModals[i].addEventListener('hidden.bs.modal', onHideModal);
             };
         },
-        initButtons = function () {
-            var vbuttons = basejs.getElementsBySelector('button[data-basejs-posturl]');
-            if (basejs.exists(vbuttons)) {
-                for (let i = 0; i < vbuttons.length; i++) {
-                    vbuttons[i].addEventListener('click', onSaveAndReplace);
-                }
-            }
-        },
+        //initButtons = function () {
+        //    var vbuttons = basejs.getElementsBySelector('button[data-basejs-posturl]');
+        //    if (basejs.exists(vbuttons)) {
+        //        for (let i = 0; i < vbuttons.length; i++) {
+        //            vbuttons[i].addEventListener('click', onSaveAndReplace);
+        //        }
+        //    }
+        //},
         // initialize anything on the page that is needed.
         init = function () {
             initModals();
-            initButtons();
+            //initButtons();
             initDefaultModals();
         },
         app = {}
         ;
     app['init'] = init;
-    app['failureModal'] = failureModal;
-    app['failureModalResponse'] = failureModalResponse;
-    app['loadingModal'] = loadingModal;
+    app['failureModal'] = failModal;
+    app['failureModalResponse'] = failModalResponse;
+    app['loadingModal'] = loadModal;
     basejs['modals'] = app;
     domready(init);
 })();

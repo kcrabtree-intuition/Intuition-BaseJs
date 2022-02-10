@@ -1,0 +1,19 @@
+{
+  "name": "intuition-basejs",
+  "version": "1.0.0",
+  "description": "Intuition MVC BS5 JS Library",
+  "main": "basejs.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kcrabtree-intuition/Intuition-BaseJs.git"
+  },
+  "author": "Kyle Crabtree",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kcrabtree-intuition/Intuition-BaseJs/issues"
+  },
+  "homepage": "https://github.com/kcrabtree-intuition/Intuition-BaseJs#readme"
+}
