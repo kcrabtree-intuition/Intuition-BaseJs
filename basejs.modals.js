@@ -41,56 +41,6 @@
             };
         },
 
-        // Save data to server, close the modal (when success) and replace an element with a partial
-        onSaveAndReplace = function (event, modalId) {
-            var vbutton = basejs.eventSource(event),
-                vdataUrl = basejs.getDataFromTag(vbutton, 'posturl'),
-                vformData = basejs.createFormData(),
-                vupdateTarget = basejs.getDataFromTag(vbutton, 'updatetarget'),
-                vupdateTargetError = basejs.getDataFromTag('updatetargeterror'),
-                vbusy = null,
-                vsuccess = null,
-                vfailed = null,
-                vcomplete = null;
-
-            // turn button to busy button
-            vbusy = showBusy.apply(vbutton, arguments);
-
-            // grab params from the button (if any) and set them to the FormData
-            var vdataset = [].filter.call(vbutton.attributes, function (at) { return /^data-basejs-param-/.test(at.name); });
-            if (basejs.isArray(vdataset)) {
-                for (let i = 0; i < vdataset.length; i++) {
-                    var vname = vdataset[i].name.replace('data-basejs-param-', '').toLowerCase(), vvalue = vdataset[i].value;
-                    vformData.append(vname, vvalue);
-                }
-            }
-
-            if (basejs.isUri(vdataUrl)) {
-                vsuccess = function (data) {
-                    var vmodal = bootstrap.Modal.getInstance(basejs.getElement(modalId));
-                    if (exists(vupdateTarget)) {
-                        if (basejs.isElement(basejs.getElement(vupdateTarget))) {
-                            basejs.getElement(vupdateTarget).innerHTML = data.response;
-                        }
-                    }
-                    vmodal.hide();
-                };
-                vfailed = function (data) {
-                    if (exists(vupdateTargetError)) {
-                        if (basejs.isElement(basejs.getElement(vupdateTargetError))) {
-                            basejs.getElement(vupdateTargetError).innerHTML = data.response;
-                        }
-                    }
-                };
-                vcomplete = function () {
-                    showOriginal(vbutton, vbusy);
-                }
-                basejs.postForm(vdataUrl, vformData, vsuccess, vfailed, vcomplete);
-            }
-
-
-        },
-
         // happens when a modal is hidden
         onHideModal = function (event) {
             var veventSource = basejs.eventSource(event);
