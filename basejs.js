@@ -30,7 +30,7 @@
 // Keep all specific methods for specific functions out of this file
 // Use basejs.custom.js for anything specific.
 (function () {
-    var uId = 0, busyBtnCss = 'spinner-border spinner-border-sm',
+    var uId = 0, busyBtnCss = 'spinner-border spinner-border-sm', 
         // Creates an identifier that is unique for creating a DOM element ID
         uid = function () {
             var d = new Date(), s = 'iid_' + d.getTime() + '_' + uId++;
