@@ -260,7 +260,6 @@
         // el: The element to fade in
         // display: (optional) set display:block by default or override with your own.
         fadeIn = function (el, display) {
-            return;
             el.style.opacity = 0;
             el.style.display = display || "block";
             (function fade() {
