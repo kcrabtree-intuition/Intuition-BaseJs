@@ -30,7 +30,7 @@
 // Keep all specific methods for specific functions out of this file
 // Use basejs.custom.js for anything specific.
 (function () {
-    var uId = 0, busyBtnCss = 'spinner-border spinner-border-sm', 
+    var uId = 0, busyBtnCss = 'spinner-border spinner-border-sm',
         // Creates an identifier that is unique for creating a DOM element ID
         uid = function () {
             var d = new Date(), s = 'iid_' + d.getTime() + '_' + uId++;
@@ -260,6 +260,7 @@
         // el: The element to fade in
         // display: (optional) set display:block by default or override with your own.
         fadeIn = function (el, display) {
+            return;
             el.style.opacity = 0;
             el.style.display = display || "block";
             (function fade() {
@@ -276,9 +277,9 @@
             var velements = document.getElementsByClassName('field-validation-error');
             for (var i = 0; i < velements.length; i++) {
                 if (velements[i].innerHTML !== "") {
-                    var e = getElement(velements[i].dataset.valmsgFor.replace('.', '_'));
-                    if (exists(e)) {
-                        e.classList.add('is-invalid');
+                    var e = document.getElementsByName(velements[i].dataset.valmsgFor);
+                    if (exists(e) && isNodeList(e)) {
+                        e[0].classList.add('is-invalid');
                     }
                 }
             }
@@ -496,7 +497,7 @@
                     // grabs the submit button based inside of the current form
                     vcurrentButton = getElementBySelector('button[type="submit"]', vform);
                     // get FormData based on current form.
-                    vformData = createFormData(vform);      
+                    vformData = createFormData(vform);
                 }
                 // set busy indicator on the submit button
                 vbusy = showBusy.apply(vcurrentButton, arguments);
@@ -547,7 +548,7 @@
             if (isElement(vinput)) {
                 vinput.classList.remove('is-invalid');
                 vinput.classList.remove('input-validation-error');
-                var verrorSpan = document.querySelectorAll("[data-valmsg-for='" + vinput.id.replace('_', '.') + "']");
+                var verrorSpan = document.querySelectorAll("[data-valmsg-for='" + vinput.name + "']");
                 if (exists(verrorSpan)) {
                     for (var i = 0; i < verrorSpan.length; i++) {
                         verrorSpan[i].innerHTML = "";
