@@ -167,9 +167,9 @@
         },
 
         // uses a selector to pull the first element that matches
-        getElementBySelector = function (a, el) {
+        getElementBySelector = function (selector, el) {
             var elements = null;
-            elements = getElementsBySelector(a, el);
+            elements = getElementsBySelector(selector, el);
             return (exists(elements) && isArray(elements)) ? elements[0] : elements;
         },
 
@@ -577,6 +577,14 @@
             }
         },
 
+        // find the first auto focus entry and set it as the current field (only when returning from an ajax request)
+        autoFocus = function () {
+            var velement = getElementBySelector('[autofocus=autofocus],[autofocus=true]');
+            if (exists(velement)) {
+                velement.focus();
+            }
+        },
+
         // automatically load forms on the page without requiring the onsubmit routine on each one.
         // These will only load one way though, so if customization is needed, call it directly.
         // Will call postAndReplace
@@ -628,6 +636,7 @@
             setFieldValidations();
             initValidations();
             initButtons();
+            autoFocus();
         },
 
         app = {}
@@ -669,6 +678,7 @@
     app['postAndReplace'] = postAndReplace;
     app['initValidations'] = initValidations;
     app['copyInputField'] = copyInputField;
+    app['autoFocus'] = autoFocus;
     app['initForms'] = initForms;
     app['initButtons'] = initButtons;
     app['init'] = init;
