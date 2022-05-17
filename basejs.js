@@ -401,6 +401,15 @@
                 vcloseModalElementId = exists(closeModalElementId) ?  // Gets close modal element.   This is the element it will attempt to close a bs modal for.
                     closeModalElementId :
                     getDataFromTag(vform, 'closemodaltarget'),
+                vsuccessFunction = exists(successFunction) ?
+                    successFunction:
+                    getDataFromTag(vform, 'successfunction'),
+                verrorFunction = exists(errorFunction) ?
+                    errorFunction:
+                    getDataFromTag(vform, 'errorfunction'),
+                vcompleteFunction = exists(completeFunction) ?
+                    completeFunction:
+                    getDataFromTag(vform, 'completefunction'),
                 vformData = null;                           // FormData for posting
 
             // success method
@@ -431,8 +440,8 @@
                     }
 
                     // run external success function
-                    if (exists(successFunction) && isFunction(successFunction)) {
-                        successFunction();
+                    if (exists(vsuccessFunction) && isFunction(vsuccessFunction)) {
+                        vsuccessFunction();
                     }
                 }
             };
@@ -464,8 +473,8 @@
                 }
 
                 // run additional external error functions
-                if (exists(errorFunction) && isFunction(errorFunction)) {
-                    errorFunction();
+                if (exists(verrorFunction) && isFunction(verrorFunction)) {
+                    verrorFunction();
                 }
             };
 
@@ -475,8 +484,8 @@
                 showOriginal(vcurrentButton, vbusy);
 
                 // run additional external error functions
-                if (exists(completeFunction) && isFunction(completeFunction)) {
-                    completeFunction();
+                if (exists(vcompleteFunction) && isFunction(vcompleteFunction)) {
+                    vcompleteFunction();
                 }
 
                 // initialize everything on the page again.

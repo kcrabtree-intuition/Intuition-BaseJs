@@ -21,7 +21,12 @@
                 };
                 var vfailed = function (data) {
                     if (basejs.exists(data)) {
+                        //if (data.statusCode >= 500) {
+                        //    document.write(data.response);
+                        //}
+                        //else {
                         setFailureModal(veventSource, data);
+                        //}
                     }
                     else {
                         setFailureModal(veventSource);
@@ -83,10 +88,10 @@
 
         // Sets the current failure modal to the element provided with response from server.
         // Input:
-        //      element:
-        //          [Required] which element to update with the failureModalHtml
-        //      responseData:
-        //          [Optional] The data to replace {responseData} with
+        //      {responseData}:
+        //          [Required] Replaces the string literal with the response from the server in the modal
+        //      {responseText}:
+        //          [Optional] Replaces the string literal with the text assigned to failureResponseHtml
         setFailureModal = function (element, responseData) {
             if (basejs.isElement(element)) {
                 var vhtml = failureModalHtml.replace('{responseText}', (basejs.exists(responseData) ? failureResponseHtml : ''));
@@ -97,8 +102,8 @@
 
         // Sets the current loading modal to the element provided.
         // Input:
-        //      [Required] element:
-        //          Replaces the element with the loadingModalHtml
+        //      element:
+        //          [Required] Replaces the element with the loadingModalHtml
         setLoadingModal = function (element) {
             if (basejs.isElement(element)) {
                 element.innerHTML = loadingModalHtml;
@@ -184,9 +189,18 @@
                 vsharedModals[i].addEventListener('hidden.bs.modal', onHideModal);
             };
         },
+        //initButtons = function () {
+        //    var vbuttons = basejs.getElementsBySelector('button[data-basejs-posturl]');
+        //    if (basejs.exists(vbuttons)) {
+        //        for (let i = 0; i < vbuttons.length; i++) {
+        //            vbuttons[i].addEventListener('click', onSaveAndReplace);
+        //        }
+        //    }
+        //},
         // initialize anything on the page that is needed.
         init = function () {
             initModals();
+            //initButtons();
             initDefaultModals();
         },
         app = {}
@@ -194,6 +208,7 @@
     app['init'] = init;
     app['failureModal'] = failModal;
     app['failureModalResponse'] = failModalResponse;
+    app['setFailureModal'] = setFailureModal;
     app['loadingModal'] = loadModal;
     basejs['modals'] = app;
     domready(init);
