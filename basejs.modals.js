@@ -4,7 +4,7 @@
         // happens when a modal is shown.  used to post to server and pull back a partial view
         onShowModal = function (event) {
             var veventSource = basejs.eventSource(event), vbutton = event.relatedTarget, vdataUrl = basejs.getDataFromTag(vbutton, 'posturl'), vformData = null;
-            if (exists(vdataUrl)) {
+            if (basejs.exists(vdataUrl)) {
                 // we only want to use this if the posturl is present.  This allows bootstrap to be used normally as well.
                 setLoadingModal(veventSource);
                 vformData = basejs.createFormData();
