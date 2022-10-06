@@ -245,30 +245,43 @@
 
         // fades an element out and sets display:none on it.
         // el: The element to fade out.
-        fadeOut = function (el) {
+        fadeOut = function (el, completeFunction, intervalSpeed) {
             if (isElement(el)) {
-                el.style.opacity = 1;
-                if ((el.style.opacity -= 0.1) < 0) {
-                    el.style.display = "none";
-                } else {
-                    requestAnimationFrame(fade);
-                }
+                var fadeEffect = setInterval(function () {
+                    if (!el.style.opacity) {
+                        el.style.opacity = 1;
+                    }
+                    if (el.style.opacity > 0) {
+                        el.style.opacity -= 0.1;
+                    } else {
+                        clearInterval(fadeEffect);
+                        if (isFunction(completeFunction)) {
+                            completeFunction();
+                        }
+                    }
+                }, exists(intervalSpeed) ? intervalSpeed : 25);
             }
         },
 
         // fades an element in
         // el: The element to fade in
         // display: (optional) set display:block by default or override with your own.
-        fadeIn = function (el, display) {
-            el.style.opacity = 0;
-            el.style.display = display || "block";
-            (function fade() {
-                var val = parseFloat(el.style.opacity);
-                if (((val += 0.1) <= 1)) {
-                    el.style.opacity = val;
-                    requestAnimationFrame(fade);
-                }
-            })();
+        fadeIn = function (el, completeFunction) {
+            if (isElement(el)) {
+                var fadeEffect = setInterval(function () {
+                    if (!el.style.opacity) {
+                        el.style.opacity = 1;
+                    }
+                    if (el.style.opacity < 1) {
+                        el.style.opacity += 0.1;
+                    } else {
+                        clearInterval(fadeEffect);
+                        if (isFunction(completeFunction)) {
+                            completeFunction();
+                        }
+                    }
+                }, exists(intervalSpeed) ? intervalSpeed : 25);
+            }
         },
 
         // Loads all field validations on a page that have an error and applies an 'is-invalid' class to the calling inputs
@@ -290,7 +303,7 @@
         showBusy = function () {
             var a = null, b = uid(), c = this, d = c.innerHTML;
             //if (this.tagName === 'BUTTON') {
-            c.innerHTML = '';
+            c.innerHTML = c.innerHTML + '&nbsp;';
             c.setAttribute("disabled", "disabled");
             a = document.createElement('div');
             a.id = b;
