@@ -3,42 +3,46 @@
 
         // happens when a modal is shown.  used to post to server and pull back a partial view
         onShowModal = function (event) {
-            var veventSource = basejs.eventSource(event), vbutton = event.relatedTarget, vdataUrl = basejs.getDataFromTag(vbutton, 'posturl'), vformData = basejs.createFormData();
-            setLoadingModal(veventSource);
-            // get data-basejs- objects from element
-            var vdataset = [].filter.call(vbutton.attributes, function (at) { return /^data-basejs-param-/.test(at.name); });
-            if (basejs.isArray(vdataset)) {
-                for (let i = 0; i < vdataset.length; i++) {
-                    var vname = vdataset[i].name.replace('data-basejs-param-', '').toLowerCase(), vvalue = vdataset[i].value;
-                    vformData.append(vname, vvalue);
+            var veventSource = basejs.eventSource(event), vbutton = event.relatedTarget, vdataUrl = basejs.getDataFromTag(vbutton, 'posturl'), vformData = null;
+            if (exists(vdataUrl)) {
+                // we only want to use this if the posturl is present.  This allows bootstrap to be used normally as well.
+                setLoadingModal(veventSource);
+                vformData = basejs.createFormData();
+                // get data-basejs- objects from element
+                var vdataset = [].filter.call(vbutton.attributes, function (at) { return /^data-basejs-param-/.test(at.name); });
+                if (basejs.isArray(vdataset)) {
+                    for (let i = 0; i < vdataset.length; i++) {
+                        var vname = vdataset[i].name.replace('data-basejs-param-', '').toLowerCase(), vvalue = vdataset[i].value;
+                        vformData.append(vname, vvalue);
+                    }
                 }
-            }
-            // if we can post, let's do it
-            if (basejs.isUri(vdataUrl)) {
-                var vsuccess = function (data) {
-                    veventSource.innerHTML = data.response;
-                    basejs.initForms();
-                };
-                var vfailed = function (data) {
-                    if (basejs.exists(data)) {
-                        //if (data.statusCode >= 500) {
-                        //    document.write(data.response);
-                        //}
-                        //else {
-                        setFailureModal(veventSource, data);
-                        //}
-                    }
-                    else {
-                        setFailureModal(veventSource);
-                    }
-                };
-                var vcomplete = function () {
+                // if we can post, let's do it
+                if (basejs.isUri(vdataUrl)) {
+                    var vsuccess = function (data) {
+                        veventSource.innerHTML = data.response;
+                        basejs.initForms();
+                    };
+                    var vfailed = function (data) {
+                        if (basejs.exists(data)) {
+                            //if (data.statusCode >= 500) {
+                            //    document.write(data.response);
+                            //}
+                            //else {
+                            setFailureModal(veventSource, data);
+                            //}
+                        }
+                        else {
+                            setFailureModal(veventSource);
+                        }
+                    };
+                    var vcomplete = function () {
 
+                    };
+                    basejs.postForm(vdataUrl, vformData, vsuccess, vfailed, vcomplete);
+                } else {
+                    setFailureModal(veventSource);
                 };
-                basejs.postForm(vdataUrl, vformData, vsuccess, vfailed, vcomplete);
-            } else {
-                setFailureModal(veventSource);
-            };
+            }
         },
 
         // happens when a modal is hidden
