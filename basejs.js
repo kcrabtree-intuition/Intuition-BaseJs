@@ -56,7 +56,7 @@
         },
 
         // converts a string to bool.  If already bool, will return the boolean.
-        toBool = function (a) {
+        toBoolean = function (a) {
             if (exists(a)) {
                 if (isBoolean(a)) {
                     return a;
@@ -137,7 +137,7 @@
         isJson = function (a) {
             try {
                 var value = JSON.parse(a);
-                return true
+                return true;
             } catch (e) {
                 return false;
             }
@@ -209,8 +209,8 @@
         // gets the first form element on the page
         getFirstForm = function () {
             var vforms = document.getElementsByTagName('form');
-            if (exists(vform) && vform.count > 0) {
-                return vform[0];
+            if (exists(vforms) && vforms.count > 0) {
+                return vforms[0];
             }
             return null;
         },
@@ -248,7 +248,7 @@
         fadeOut = function (el) {
             if (isElement(el)) {
                 el.style.opacity = 1;
-                if ((el.style.opacity -= .1) < 0) {
+                if ((el.style.opacity -= 0.1) < 0) {
                     el.style.display = "none";
                 } else {
                     requestAnimationFrame(fade);
@@ -260,12 +260,11 @@
         // el: The element to fade in
         // display: (optional) set display:block by default or override with your own.
         fadeIn = function (el, display) {
-            return;
             el.style.opacity = 0;
             el.style.display = display || "block";
             (function fade() {
                 var val = parseFloat(el.style.opacity);
-                if (!((val += .1) > 1)) {
+                if (((val += 0.1) <= 1)) {
                     el.style.opacity = val;
                     requestAnimationFrame(fade);
                 }
@@ -366,14 +365,20 @@
                     vresult['statusCode'] = vrequest.status;
                     if (this.status == 200) {
                         //console.log('succeed');
-                        successFunction(vresult);
+                        if (isFunction(successFunction)) {
+                            successFunction(vresult);
+                        }
                     }
                     else {
                         //console.log('server error');
-                        errorFunction(vresult);
+                        if (isFunction(errorFunction)) {
+                            errorFunction(vresult);
+                        }
                     }
                     //alert('1st complete done');
-                    completeFunction();
+                    if (isFunction(completeFunction)) {
+                        completeFunction();
+                    }
                 }
             };
 
@@ -452,7 +457,7 @@
                 var vclearOnError = getDataFromTag(vform, 'cleartargetonerror');
 
                 // check to see if the element should be cleared out
-                if (exists(vclearOnError) && toBool(vclearOnError) === true) {
+                if (exists(vclearOnError) && toBoolean(vclearOnError) === true) {
                     var el = getElement(vreplaceId);
                     el.innerHTML = '';
                 }
@@ -533,7 +538,7 @@
             else {
                 // throw error if no forms to submit?
                 // alert('no form to submit');
-            };
+            }
             return false;
         },
 
@@ -655,7 +660,7 @@
     app['uniqueId'] = uid;
     app['exists'] = exists;
     app['toCamel'] = toCamel;
-    app['toBool'] - toBool;
+    app['toBoolean'] - toBoolean;
     app['isFunction'] = isFunction;
     app['isNodeList'] = isNodeList;
     app['isArray'] = isArray;
