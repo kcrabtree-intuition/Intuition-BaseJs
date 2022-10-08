@@ -444,8 +444,8 @@
                     }
 
                     // run external success function
-                    if (exists(vsuccessFunction) && isFunction(vsuccessFunction)) {
-                        vsuccessFunction();
+                    if (exists(vsuccessFunction)) {
+                        eval(vsuccessFunction); // will replace this later on, but works for now. need to get getFunctionFromString working right
                     }
                 }
             };
@@ -540,7 +540,17 @@
             }
             return false;
         },
+        getFunctionFromString = function (string) {
+            var scope = window;
+            var scopeSplit = string.split('.');
+            for (i = 0; i < scopeSplit.length - 1; i++) {
+                scope = scope[scopeSplit[i]];
 
+                if (scope == undefined) return;
+            }
+
+            return scope[scopeSplit[scopeSplit.length - 1]];
+        },
         // initialize all validations so that once you start typing it will clear out errors
         // form: The form element to initialize.
         initValidations = function () {
