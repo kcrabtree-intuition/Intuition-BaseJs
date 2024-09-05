@@ -653,6 +653,14 @@
                 }
             }
         },
+        executeDeferredFunctions = function () {
+            var a = window.deferredFunctions, x = 0, l = (isArray(a) ? a.length : 0);
+            for (x = 0; x < l; x++) {
+                if (isFunction(a[x])) {
+                    a[x]();
+                }
+            }
+        },
         // initialize anything on the page that is needed.
         init = function () {
             initForms();
@@ -660,6 +668,7 @@
             initValidations();
             initButtons();
             autoFocus();
+            executeDeferredFunctions();
         },
 
         app = {}

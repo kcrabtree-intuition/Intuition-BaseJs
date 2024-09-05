@@ -21,6 +21,7 @@
                     var vsuccess = function (data) {
                         veventSource.innerHTML = data.response;
                         basejs.initForms();
+                        basejs.executeDeferredFunctions();
                     };
                     var vfailed = function (data) {
                         if (basejs.exists(data)) {
