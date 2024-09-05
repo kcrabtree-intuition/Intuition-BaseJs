@@ -713,6 +713,7 @@
     app['autoFocus'] = autoFocus;
     app['initForms'] = initForms;
     app['initButtons'] = initButtons;
+    app['executeDeferredFunctions'] = executeDeferredFunctions;
     app['init'] = init;
     window['basejs'] = app;
     domready(init);
