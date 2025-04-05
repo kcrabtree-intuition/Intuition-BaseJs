@@ -67,6 +67,9 @@
         // initialize anything on the page that is needed.
         init = function () {
             initInputFilters();
-        };
+        },
+        app = {};
+        app['init'] = init;
+        window['basejsinputfilter'] = app;
     domready(init);
 })();

@@ -653,6 +653,11 @@
                 }
             }
         },
+        initInputFilters = function () {
+            if (exists(basejsinputfilter) && isFunction(basejsinputfilter.init)) {
+                basejsinputfilter.init();
+            }
+        },
         executeDeferredFunctions = function () {
             var a = window.deferredFunctions, x = 0, l = (isArray(a) ? a.length : 0);
             for (x = 0; x < l; x++) {
@@ -668,6 +673,7 @@
             initValidations();
             initButtons();
             autoFocus();
+            initInputFilters();
             executeDeferredFunctions();
         },
 
