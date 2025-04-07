@@ -718,6 +718,7 @@
     app['copyInputField'] = copyInputField;
     app['autoFocus'] = autoFocus;
     app['initForms'] = initForms;
+    app['initInputFilters'] = initInputFilters;
     app['initButtons'] = initButtons;
     app['executeDeferredFunctions'] = executeDeferredFunctions;
     app['init'] = init;
